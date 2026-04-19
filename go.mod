@@ -1,6 +1,6 @@
 module github.com/bootdotdev/learn-file-storage-s3-golang-starter
 
-go 1.23.0
+go 1.24.0
 
 require (
 	github.com/golang-jwt/jwt/v5 v5.0.0-rc.1
@@ -16,5 +16,6 @@ require (
 
 require (
 	github.com/alexedwards/argon2id v1.0.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
+	github.com/go-openapi/runtime v0.29.3 // indirect
+	golang.org/x/sys v0.41.0 // indirect
 )
