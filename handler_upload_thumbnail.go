@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"mime"
@@ -53,22 +55,38 @@ func (cfg *apiConfig) handlerUploadThumbnail(w http.ResponseWriter, r *http.Requ
 		respondWithError(w, http.StatusInternalServerError, "Couldn't parse thumbnail", err)
 		return
 	}
-	// data, err := io.ReadAll(file)
-	// if err != nil {
-	// 	respondWithError(w, http.StatusInternalServerError, "Couldn't parse thumbnail", err)
-	// 	return
-	// }
+	defer file.Close()
 
-	exts, err := mime.ExtensionsByType(header.Header.Get("Content-Type"))
-	if err != nil || len(exts) == 0 {
+	contentType := header.Header.Get("Content-Type")
+
+	mediaType, _, err := mime.ParseMediaType(contentType)
+	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't detect thumbnail Ext", err)
 		return
 	}
+	var fileExt string
+	switch mediaType {
+	case "image/png":
+		fileExt = "png"
+	case "image/jpeg":
+		fileExt = "jpeg"
+	default:
+		{
+			respondWithError(
+				w,
+				http.StatusInternalServerError,
+				"Couldn't detect thumbnail Ext",
+				err,
+			)
+			return
+		}
+	}
 
-	fileExt := exts[0]
-	fileName := filepath.Join(cfg.assetsRoot, fmt.Sprintf("%s%s", videoID.String(), fileExt))
+	b := make([]byte, 32)
+	rand.Read(b)
+	encodedThumbnail := base64.RawURLEncoding.EncodeToString(b)
 
-	fmt.Printf("path: %s\n", fileName)
+	fileName := filepath.Join(cfg.assetsRoot, fmt.Sprintf("%s.%s", encodedThumbnail, fileExt))
 
 	createdFile, err := os.Create(fileName)
 	if err != nil {
