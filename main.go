@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -77,7 +76,6 @@ func main() {
 	if s3Region == "" {
 		log.Fatal("S3_REGION environment variable is not set")
 	}
-	fmt.Printf("s3Region: %s\n", s3Region)
 
 	s3CfDistribution := os.Getenv("S3_CF_DISTRO")
 	if s3CfDistribution == "" {

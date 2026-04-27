@@ -95,7 +95,9 @@ func (cfg *apiConfig) handlerVideoGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, video)
+	updatedVideo, _ := cfg.dbVideoToSignedVideo(video)
+
+	respondWithJSON(w, http.StatusOK, updatedVideo)
 }
 
 func (cfg *apiConfig) handlerVideosRetrieve(w http.ResponseWriter, r *http.Request) {
@@ -116,5 +118,12 @@ func (cfg *apiConfig) handlerVideosRetrieve(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, videos)
+	updatedVideos := make([]database.Video, len(videos))
+	for i, vid := range videos {
+		updatedVid, _ := cfg.dbVideoToSignedVideo(vid)
+		updatedVideos[i] = updatedVid
+	}
+	videos = updatedVideos
+
+	respondWithJSON(w, http.StatusOK, updatedVideos)
 }
